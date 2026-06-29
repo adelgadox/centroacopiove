@@ -12,6 +12,7 @@ class Shipment(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     center_id = Column(UUID(as_uuid=True), ForeignKey("centers.id", ondelete="SET NULL"), nullable=True, index=True)
+    campaign_id = Column(UUID(as_uuid=True), ForeignKey("campaigns.id", ondelete="SET NULL"), nullable=True, index=True)
     destination = Column(String, nullable=False, server_default="Venezuela")
     carrier = Column(String, nullable=True)
     reference = Column(String, nullable=True)

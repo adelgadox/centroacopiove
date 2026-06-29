@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api"
 import { revalidatePath } from "next/cache"
 
 export async function createShipmentAction(data: {
+  campaign_id?: string
   destination?: string
   carrier?: string
   reference?: string
@@ -18,6 +19,7 @@ export async function createShipmentAction(data: {
       method: "POST",
       token: session.accessToken,
       body: {
+        campaign_id: data.campaign_id ?? null,
         destination: data.destination ?? "Venezuela",
         carrier: data.carrier ?? null,
         reference: data.reference ?? null,

@@ -6,6 +6,7 @@ from app.schemas.pallet import PalletDetailOut
 
 
 class ShipmentCreate(StrictModel):
+    campaign_id: UUID | None = None
     destination: str = "Venezuela"
     carrier: str | None = None
     reference: str | None = None
@@ -15,6 +16,7 @@ class ShipmentCreate(StrictModel):
 class ShipmentOut(StrictORMModel):
     id: UUID
     center_id: UUID | None
+    campaign_id: UUID | None
     destination: str
     carrier: str | None
     reference: str | None
@@ -28,6 +30,7 @@ class ShipmentOut(StrictORMModel):
 class ShipmentDetailOut(StrictModel):
     id: UUID
     center_id: UUID | None
+    campaign_id: UUID | None
     destination: str
     carrier: str | None
     reference: str | None

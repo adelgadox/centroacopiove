@@ -18,6 +18,7 @@ class ShipmentService(BaseService):
         repo = ShipmentRepository(self.db)
         shipment = Shipment(
             center_id=center_id,
+            campaign_id=data.campaign_id,
             destination=data.destination,
             carrier=data.carrier,
             reference=data.reference,
@@ -142,6 +143,7 @@ class ShipmentService(BaseService):
         return ShipmentDetailOut(
             id=shipment.id,
             center_id=shipment.center_id,
+            campaign_id=shipment.campaign_id,
             destination=shipment.destination,
             carrier=shipment.carrier,
             reference=shipment.reference,

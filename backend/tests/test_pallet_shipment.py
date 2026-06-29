@@ -65,6 +65,7 @@ def _shipment(status="OPEN", **kwargs):
     s = MagicMock()
     s.id = SHIPMENT_ID
     s.center_id = CENTER_ID
+    s.campaign_id = None
     s.destination = "Venezuela"
     s.carrier = None
     s.reference = None

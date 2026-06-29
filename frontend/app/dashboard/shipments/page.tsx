@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useTransition } from "react"
-import type { ShipmentOut, ShipmentDetailOut, ShipmentStatus, PalletOut } from "@/types"
+import type { Campaign, ShipmentOut, ShipmentDetailOut, ShipmentStatus, PalletOut } from "@/types"
 import {
   createShipmentAction,
   addPalletToShipmentAction,
@@ -29,9 +29,10 @@ export default function ShipmentsPage() {
   const [error, setError] = useState<string | null>(null)
   const [activeShipment, setActiveShipment] = useState<ShipmentDetailOut | null>(null)
   const [closedPallets, setClosedPallets] = useState<PalletOut[]>([])
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [selectedPalletId, setSelectedPalletId] = useState("")
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [newShipment, setNewShipment] = useState({ destination: "Venezuela", carrier: "", reference: "", notes: "" })
+  const [newShipment, setNewShipment] = useState({ campaign_id: "", destination: "Venezuela", carrier: "", reference: "", notes: "" })
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -62,15 +63,25 @@ export default function ShipmentsPage() {
 
   useEffect(() => { fetchShipments() }, [filter])
 
+  useEffect(() => {
+    fetch("/api/campaigns?active_only=true")
+      .then((r) => r.ok ? r.json() : [])
+      .then(setCampaigns)
+      .catch(() => setCampaigns([]))
+  }, [])
+
   const handleCreate = async () => {
     setActionLoading("create")
-    const result = await createShipmentAction(newShipment)
+    const result = await createShipmentAction({
+      ...newShipment,
+      campaign_id: newShipment.campaign_id || undefined,
+    })
     setActionLoading(null)
     if (result.error) {
       setError(result.error)
     } else {
       setShowCreateForm(false)
-      setNewShipment({ destination: "Venezuela", carrier: "", reference: "", notes: "" })
+      setNewShipment({ campaign_id: "", destination: "Venezuela", carrier: "", reference: "", notes: "" })
       await fetchShipments()
     }
   }
@@ -155,6 +166,21 @@ export default function ShipmentsPage() {
         <div className="rounded-xl border border-zinc-200 bg-white p-5 space-y-3">
           <h2 className="font-semibold text-sm text-zinc-900">Nuevo envío</h2>
           <div className="grid grid-cols-2 gap-3">
+            <label className="space-y-1 col-span-2">
+              <span className="text-xs text-zinc-500">Campaña / Operación</span>
+              <select
+                className="w-full text-sm border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+                value={newShipment.campaign_id}
+                onChange={(e) => setNewShipment({ ...newShipment, campaign_id: e.target.value })}
+              >
+                <option value="">— Sin campaña —</option>
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.destination_country ? ` (${c.destination_country})` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="space-y-1">
               <span className="text-xs text-zinc-500">Destino</span>
               <input className="w-full text-sm border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-400"

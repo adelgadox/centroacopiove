@@ -20,7 +20,7 @@ from app.utils.cloudflare import get_client_ip
 from app.utils.rate_limit import limiter
 
 # ── Routers ────────────────────────────────────────────────────────────────────
-from app.routers import auth, box, center, intake, pallet, product_type, shipment, users
+from app.routers import auth, box, campaign, center, intake, pallet, product_type, shipment, users
 
 # ── Models (ensure tables are registered with SQLAlchemy) ─────────────────────
 from app.models import user as _user_model                  # noqa: F401
@@ -32,6 +32,7 @@ from app.models import pallet as _pallet_model              # noqa: F401
 from app.models import intake as _intake_model              # noqa: F401
 from app.models import box as _box_model                    # noqa: F401
 from app.models import events as _events_model              # noqa: F401
+from app.models import campaign as _campaign_model          # noqa: F401
 
 logging.basicConfig(
     level=logging.INFO,
@@ -248,6 +249,7 @@ app.include_router(box.router)
 # Pallet router registers /p/{code} (public) and /v1/pallets/* (authenticated)
 app.include_router(pallet.router)
 app.include_router(shipment.router)
+app.include_router(campaign.router)
 
 
 # ── Health ─────────────────────────────────────────────────────────────────────

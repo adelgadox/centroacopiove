@@ -33,8 +33,19 @@
 
 | # | Tarea | Descripción | Complejidad | Estado |
 |---|-------|-------------|-------------|--------|
-| 12 | Migración `003_center_geo` | Agregar `country_code` (ISO 3166-1 α-2, ej. `MX`) y `state_name` a `centers` | 🟢 | ⬜ Pendiente |
-| 13 | Actualizar modelo + CRUD de `Center` | Exponer `country_code` y `state_name` en schemas y endpoints | 🟢 | ⬜ Pendiente |
-| 14 | UI de alta/edición de centro | Selector de país (dropdown ISO) + campo de estado/provincia en el formulario del `national_admin` | 🟡 | ⬜ Pendiente |
+| 12 | Migración `003_center_geo` | Agregar `country_code` (ISO 3166-1 α-2, ej. `MX`) y `state_name` a `centers` | 🟢 | ✅ Done |
+| 13 | Actualizar modelo + CRUD de `Center` | Exponer `country_code` y `state_name` en schemas y endpoints | 🟢 | ✅ Done |
+| 14 | UI de alta/edición de centro | Selector de país (dropdown ISO) + campo de estado/provincia en el formulario del `national_admin` | 🟡 | ✅ Done |
 
 > **Nota de diseño:** `country_code` usa [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) (2 letras). `state_name` es texto libre para cubrir MX, VE y cualquier país futuro sin necesitar catálogo de estados. Se puede agregar `state_code` (ISO 3166-2) en una iteración posterior si se requiere filtrado programático por estado.
+
+#### Campañas / Operaciones humanitarias
+
+| # | Tarea | Descripción | Complejidad | Estado |
+|---|-------|-------------|-------------|--------|
+| 15 | Modelo + migración `004_campaigns` | Entidad `Campaign` global (sin `center_id`); FK nullable en `intakes` y `shipments` | 🟡 | ✅ Done |
+| 16 | CRUD de campañas | Endpoints: `national_admin` crea/edita; coordinadores/voluntarios leen para seleccionar en intake/envío | 🟡 | ✅ Done |
+| 17 | UI de gestión de campañas | Página `/dashboard/campaigns`; crear campaña con nombre, país destino, fechas; toggle activo/inactivo | 🟡 | ✅ Done |
+| 18 | Selector de campaña en intake y envío | Dropdown de campaña activa al registrar donaciones y al crear envíos | 🟠 | ✅ Done |
+
+> **Decisión de diseño:** Las campañas son **globales** (creadas por `national_admin`, sin `center_id`). Múltiples centros contribuyen a la misma campaña. `campaign_id` es FK nullable en `Intake` y `Shipment` para retrocompatibilidad.

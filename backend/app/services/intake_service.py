@@ -42,6 +42,7 @@ class IntakeService(BaseService):
 
         intake = intake_repo.save_intake(Intake(
             center_id=center_id,
+            campaign_id=data.campaign_id,
             received_by_user_id=user_id,
             donante_libre=data.donante_libre,
             notes=data.notes,
@@ -87,6 +88,7 @@ class IntakeService(BaseService):
         return IntakeOut(
             id=intake.id,
             center_id=intake.center_id,
+            campaign_id=intake.campaign_id,
             donante_libre=intake.donante_libre,
             notes=intake.notes,
             created_at=intake.created_at,

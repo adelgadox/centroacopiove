@@ -15,6 +15,7 @@ class BoxDraft(StrictModel):
 
 
 class IntakeCreate(StrictModel):
+    campaign_id: UUID | None = None
     donante_libre: str | None = None
     notes: str | None = None
     boxes: list[BoxDraft]
@@ -37,6 +38,7 @@ class BoxOut(StrictORMModel):
 class IntakeOut(StrictORMModel):
     id: UUID
     center_id: UUID
+    campaign_id: UUID | None
     donante_libre: str | None
     notes: str | None
     created_at: datetime

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import type { ProductType } from "@/types"
+import type { Campaign, ProductType } from "@/types"
 import { createIntakeAction, type BoxDraft } from "@/lib/actions"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -281,10 +281,19 @@ function BoxRowInput({
 export default function NewIntakePage() {
   const router = useRouter()
   const [rows, setRows] = useState<BoxRow[]>([newRow()])
+  const [campaignId, setCampaignId] = useState("")
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [donante, setDonante] = useState("")
   const [notes, setNotes] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch("/api/campaigns?active_only=true")
+      .then((r) => r.ok ? r.json() : [])
+      .then(setCampaigns)
+      .catch(() => setCampaigns([]))
+  }, [])
 
   const updateRow = (key: string) => (updated: BoxRow) =>
     setRows((prev) => prev.map((r) => (r.key === key ? updated : r)))
@@ -315,6 +324,7 @@ export default function NewIntakePage() {
 
     setSubmitting(true)
     const result = await createIntakeAction({
+      campaign_id: campaignId || undefined,
       donante_libre: donante.trim() || undefined,
       notes: notes.trim() || undefined,
       boxes,
@@ -338,6 +348,31 @@ export default function NewIntakePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Campaign selector */}
+        <div>
+          <label className="block text-xs font-medium text-zinc-600 mb-1">
+            Campaña / Operación
+          </label>
+          <select
+            value={campaignId}
+            onChange={(e) => setCampaignId(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
+          >
+            <option value="">— Sin campaña —</option>
+            {campaigns.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}{c.destination_country ? ` (${c.destination_country})` : ""}
+              </option>
+            ))}
+          </select>
+          {campaigns.length === 0 && (
+            <p className="mt-1 text-xs text-zinc-400">
+              No hay campañas activas. El admin nacional puede crear una en{" "}
+              <a href="/dashboard/campaigns" className="underline">Campañas</a>.
+            </p>
+          )}
+        </div>
+
         {/* Header fields */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
