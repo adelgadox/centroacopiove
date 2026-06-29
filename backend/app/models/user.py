@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.database import Base
@@ -34,6 +34,10 @@ class User(Base):
     # Login lockout — resets to 0 on successful login
     login_attempts = Column(Integer, nullable=False, server_default="0")
     lockout_until = Column(DateTime, nullable=True)
+
+    # Domain: acopio tenant membership
+    center_id = Column(UUID(as_uuid=True), ForeignKey("centers.id", ondelete="SET NULL"), nullable=True, index=True)
+    center_role = Column(String, nullable=True)  # national_admin | coordinator | volunteer
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

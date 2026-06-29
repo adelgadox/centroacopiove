@@ -1,4 +1,4 @@
-// ── User ──────────────────────────────────────────────────────────────────────
+// ── Platform user ─────────────────────────────────────────────────────────────
 
 export interface User {
   id: string
@@ -13,12 +13,31 @@ export interface User {
   created_at: string
 }
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
+// ── Domain ────────────────────────────────────────────────────────────────────
 
-export interface AuthSession {
-  accessToken: string
-  username: string
-  role: string
+export type CenterRole = "national_admin" | "coordinator" | "volunteer"
+
+export type ProductCategory =
+  | "MEDICINE"
+  | "MEDICAL_SUPPLY"
+  | "FOOD"
+  | "WATER"
+  | "HYGIENE"
+  | "TOOL"
+  | "RESCUE_GEAR"
+  | "OTHER"
+
+export interface Center {
+  id: string
+  name: string
+  address: string | null
+  contact_name: string | null
+  contact_email: string | null
+  contact_phone: string | null
+  is_active: boolean
+  created_at: string
 }
 
-// Add your project-specific types below
+export type BoxStatus = "DRAFT" | "SEALED" | "SHIPPED" | "REJECTED"
+export type PalletStatus = "OPEN" | "CLOSED" | "SHIPPED"
+export type ShipmentStatus = "OPEN" | "CLOSED" | "SHIPPED"

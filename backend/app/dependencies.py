@@ -1,3 +1,5 @@
+import uuid as _uuid
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -58,3 +60,39 @@ def get_current_superadmin(current_user: User = Depends(get_current_user)) -> Us
             detail={"code": "FORBIDDEN", "message": "Superadmin access required", "field": None, "meta": None},
         )
     return current_user
+
+
+# ── Domain role guards ─────────────────────────────────────────────────────────
+
+def require_national_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.center_role != "national_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "FORBIDDEN", "message": "National admin access required", "field": None, "meta": None},
+        )
+    return current_user
+
+
+def require_coordinator(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.center_role not in ("coordinator", "national_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "FORBIDDEN", "message": "Coordinator access required", "field": None, "meta": None},
+        )
+    return current_user
+
+
+def require_center_role(current_user: User = Depends(get_current_user)) -> User:
+    if not current_user.center_role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "FORBIDDEN", "message": "Center role required", "field": None, "meta": None},
+        )
+    return current_user
+
+
+def tenant_scope(current_user: User = Depends(get_current_user)) -> _uuid.UUID | None:
+    """Returns center_id for scoped queries; None for national_admin (sees all)."""
+    if current_user.center_role == "national_admin":
+        return None
+    return current_user.center_id

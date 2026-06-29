@@ -20,11 +20,18 @@ from app.utils.cloudflare import get_client_ip
 from app.utils.rate_limit import limiter
 
 # ── Routers ────────────────────────────────────────────────────────────────────
-from app.routers import auth
+from app.routers import auth, center, users
 
 # ── Models (ensure tables are registered with SQLAlchemy) ─────────────────────
-from app.models import user as _user_model          # noqa: F401
-from app.models import token_denylist as _token_denylist_model  # noqa: F401
+from app.models import user as _user_model                  # noqa: F401
+from app.models import token_denylist as _token_denylist    # noqa: F401
+from app.models import center as _center_model              # noqa: F401
+from app.models import product_type as _product_type_model  # noqa: F401
+from app.models import shipment as _shipment_model          # noqa: F401
+from app.models import pallet as _pallet_model              # noqa: F401
+from app.models import intake as _intake_model              # noqa: F401
+from app.models import box as _box_model                    # noqa: F401
+from app.models import events as _events_model              # noqa: F401
 
 logging.basicConfig(
     level=logging.INFO,
@@ -232,6 +239,8 @@ app.add_middleware(
 _V1 = "/v1"
 
 app.include_router(auth.router, prefix=_V1)
+app.include_router(center.router, prefix=_V1)
+app.include_router(users.router, prefix=_V1)
 
 
 # ── Health ─────────────────────────────────────────────────────────────────────

@@ -28,14 +28,19 @@ class AuthService(BaseService):
     # ── Token / password helpers ───────────────────────────────────────────────
 
     @staticmethod
-    def create_access_token(user_id: str) -> str:
+    def create_access_token(
+        user_id: str,
+        center_id: str | None = None,
+        center_role: str | None = None,
+    ) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
         jti = str(uuid.uuid4())
-        return jwt.encode(
-            {"sub": user_id, "exp": expire, "jti": jti},
-            settings.secret_key,
-            algorithm=settings.algorithm,
-        )
+        payload: dict = {"sub": user_id, "exp": expire, "jti": jti}
+        if center_id:
+            payload["center_id"] = center_id
+        if center_role:
+            payload["center_role"] = center_role
+        return jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
 
     @staticmethod
     def hash_password(password: str) -> str:
@@ -116,7 +121,17 @@ class AuthService(BaseService):
         if not user.is_verified:
             raise api_error("EMAIL_NOT_VERIFIED", "Email address not verified", status_code=403)
 
-        return {"access_token": self.create_access_token(str(user.id)), "token_type": "bearer"}
+        token = self.create_access_token(
+            str(user.id),
+            center_id=str(user.center_id) if user.center_id else None,
+            center_role=user.center_role,
+        )
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "center_role": user.center_role,
+            "center_id": str(user.center_id) if user.center_id else None,
+        }
 
     def logout(self, token: str) -> None:
         try:
