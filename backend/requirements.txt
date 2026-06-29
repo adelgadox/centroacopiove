@@ -1,0 +1,54 @@
+# ── Core ─────────────────────────────────────────────────────────────────────
+# Versions tracked against the bioflow production app (battle-tested).
+fastapi==0.136.3
+uvicorn[standard]==0.49.0
+sqlalchemy==2.0.50
+psycopg2-binary==2.9.12
+pydantic[email]==2.13.4
+pydantic-settings==2.14.1
+PyJWT==2.13.0
+bcrypt==4.3.0
+python-multipart==0.0.32
+requests==2.34.2
+resend==2.30.1
+httpx==0.28.1
+user-agents==2.2.0
+slowapi==0.1.9
+jinja2==3.1.6
+alembic==1.18.4
+sentry-sdk[fastapi]>=2.61.1
+
+# ── Background jobs + cache ───────────────────────────────────────────────────
+# Both degrade gracefully: with no REDIS_URL the cache is a no-op and queued
+# tasks fall back to in-process FastAPI BackgroundTasks. See app/arq_pool.py.
+arq==0.28.0          # durable async task queue backed by Redis
+redis==5.3.1         # Redis client (cache + arq transport)
+
+# ── Crypto — Fernet symmetric encryption for sensitive DB-stored values ───────
+cryptography>=42.0.8
+
+# ── Optional layers ───────────────────────────────────────────────────────────
+# Uncomment the section(s) you need. See docs/optional-layers.md for setup.
+
+# Cloudinary — image / video uploads
+# cloudinary==1.41.0
+
+# AI / OpenAI-compatible providers (OpenAI, DeepSeek, Groq, etc.)
+# openai==1.55.0
+
+# Langfuse — LLM observability (traces, evals, prompts)
+# langfuse==2.26.0
+
+# Stripe — payments, subscriptions, webhooks
+# stripe==11.2.0
+
+# 2FA / TOTP — authenticator app codes + backup codes
+# pyotp==2.9.0
+# qrcode[pil]==8.0
+
+# GeoIP — MaxMind GeoLite2 country/city lookup
+# geoip2==4.8.0
+
+# ElevenLabs — AI voice generation
+# elevenlabs==1.9.0
+# boto3==1.35.95        # AWS S3 / Cloudflare R2 for audio storage
