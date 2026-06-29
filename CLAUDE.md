@@ -267,7 +267,7 @@ schemas/    → Pydantic I/O models (extend StrictModel or StrictORMModel from s
 6. Router en `backend/app/routers/` + registrar en `main.py` con `prefix=_V1`
 7. Server action en `frontend/src/lib/actions.ts`
 8. Página/componente en `frontend/src/app/`
-9. Actualizar `ROADMAP.md` y `docs/roadmap/`
+9. Actualizar `docs/roadmap/phase-NN-*.md` + totales en `docs/roadmap/README.md`
 
 ---
 
