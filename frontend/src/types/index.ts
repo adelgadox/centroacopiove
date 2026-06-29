@@ -27,6 +27,17 @@ export type ProductCategory =
   | "RESCUE_GEAR"
   | "OTHER"
 
+export interface Campaign {
+  id: string
+  name: string
+  destination_country: string | null
+  description: string | null
+  start_date: string | null
+  end_date: string | null
+  is_active: boolean
+  created_at: string
+}
+
 export interface Center {
   id: string
   name: string

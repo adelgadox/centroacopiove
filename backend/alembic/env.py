@@ -17,6 +17,7 @@ import app.models.pallet          # noqa: F401
 import app.models.intake          # noqa: F401
 import app.models.box             # noqa: F401
 import app.models.events          # noqa: F401
+import app.models.campaign        # noqa: F401
 
 config = context.config
 # Use the direct (non-PgBouncer) URL for migrations when available — PgBouncer
