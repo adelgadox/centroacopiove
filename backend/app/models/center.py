@@ -14,6 +14,8 @@ class Center(Base):
     contact_name = Column(String, nullable=True)
     contact_email = Column(String, nullable=True)
     contact_phone = Column(String, nullable=True)
+    country_code = Column(String(2), nullable=True)   # ISO 3166-1 alpha-2
+    state_name = Column(String, nullable=True)
     is_active = Column(Boolean, nullable=False, server_default="true")
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=True, onupdate=func.now())

@@ -25,6 +25,8 @@ class CenterService(BaseService):
             contact_name=data.contact_name,
             contact_email=data.contact_email,
             contact_phone=data.contact_phone,
+            country_code=data.country_code,
+            state_name=data.state_name,
         )
         return CenterRepository(self.db).save(center)
 
