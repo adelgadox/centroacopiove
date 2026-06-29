@@ -78,8 +78,28 @@
 
 ---
 
+---
+
+#### Solicitudes / Mensajería interna (`/studio/requests`)
+
+> Canal de comunicación entre el equipo operativo (coordinadores y voluntarios) y los administradores en `/studio`.
+> Los operadores pueden abrir una solicitud cuando falta algo — un producto, una categoría, un ajuste — y el admin responde desde Studio sin salir de la plataforma.
+
+| # | Tarea | Descripción | Complejidad | Estado |
+|---|-------|-------------|-------------|--------|
+| 17 | Migración `006_requests` | Tabla `requests(id, author_id FK, center_id FK, title, description, status, created_at, updated_at)` + tabla `request_messages(id, request_id FK, author_id FK, body, created_at)`; estados: `OPEN \| IN_PROGRESS \| RESOLVED \| CLOSED` | 🟡 | ⬜ Pendiente |
+| 18 | Endpoints de solicitudes (backend) | `POST /v1/requests` (cualquier usuario autenticado), `GET /v1/requests` (scope por centro para coordinadores, todos para national_admin), `POST /v1/requests/{id}/messages` (hilo de respuestas), `PATCH /v1/requests/{id}` (cambiar estado, solo national_admin) | 🟠 | ⬜ Pendiente |
+| 19 | Botón "Nueva solicitud" en dashboard | Botón flotante o en la barra de navegación del dashboard; abre un modal con campos Título + Descripción; accesible para cualquier usuario logueado | 🟢 | ⬜ Pendiente |
+| 20 | Vista de mis solicitudes (`/dashboard/requests`) | Lista de solicitudes propias con estado y última respuesta; clic abre el hilo de mensajes; permite agregar mensajes de seguimiento | 🟡 | ⬜ Pendiente |
+| 21 | Bandeja de solicitudes en Studio (`/studio/requests`) | Vista de todas las solicitudes con filtros (estado, centro, fecha); hilo de mensajes por solicitud; botones para cambiar estado (In Progress → Resolved) | 🟡 | ⬜ Pendiente |
+| 22 | Notificación por email al responder | Cuando el admin responde, el autor recibe email con el mensaje; cuando el usuario responde, el admin recibe notificación (vía el sistema de email del boilerplate) | 🟡 | ⬜ Pendiente |
+
+> **Nota de diseño:** el hilo es simple e intencional — sin attachments, sin markdown, sin menciones. El objetivo es dar un canal rápido de "me falta X, ¿puedes agregarlo?" sin convertirse en un Slack interno. Los mensajes no se purgan (son evidencia operativa); solo el `audit_log` tiene TTL de 90 días.
+
+---
+
 > **Decisiones de diseño:**
 > - `audit_log.metadata` usa JSONB para capturar contexto variable sin alterar el esquema (ej. `{"from_status": "OPEN", "to_status": "CLOSED"}`).
 > - La purga a 90 días se elige como balance entre valor de auditoría y costo de almacenamiento; configurable vía env `AUDIT_RETENTION_DAYS`.
-> - El `/studio` es intencionalmennte independiente del dashboard operativo para que coordinadores y voluntarios nunca vean rutas de admin.
+> - El `/studio` es intencionalmente independiente del dashboard operativo para que coordinadores y voluntarios nunca vean rutas de admin.
 > - La creación de usuarios por `national_admin` complementa (no reemplaza) la creación por `coordinator` del boilerplate; ambos flujos coexisten.
