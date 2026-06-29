@@ -28,3 +28,13 @@
 | 9 | Layout + login NextAuth | Layout base, pantalla de login, sesión con `center_role` | 🟡 | ✅ Done |
 | 10 | Guard de rutas por rol | Middleware que protege rutas según `center_role` | 🟡 | ✅ Done |
 | 11 | Selector de centro (admin nacional) | UI para que `national_admin` cambie el contexto de centro | 🟢 | ✅ Done |
+
+#### País y estado en centros
+
+| # | Tarea | Descripción | Complejidad | Estado |
+|---|-------|-------------|-------------|--------|
+| 12 | Migración `003_center_geo` | Agregar `country_code` (ISO 3166-1 α-2, ej. `MX`) y `state_name` a `centers` | 🟢 | ⬜ Pendiente |
+| 13 | Actualizar modelo + CRUD de `Center` | Exponer `country_code` y `state_name` en schemas y endpoints | 🟢 | ⬜ Pendiente |
+| 14 | UI de alta/edición de centro | Selector de país (dropdown ISO) + campo de estado/provincia en el formulario del `national_admin` | 🟡 | ⬜ Pendiente |
+
+> **Nota de diseño:** `country_code` usa [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) (2 letras). `state_name` es texto libre para cubrir MX, VE y cualquier país futuro sin necesitar catálogo de estados. Se puede agregar `state_code` (ISO 3166-2) en una iteración posterior si se requiere filtrado programático por estado.
