@@ -41,3 +41,42 @@ export interface Center {
 export type BoxStatus = "DRAFT" | "SEALED" | "SHIPPED" | "REJECTED"
 export type PalletStatus = "OPEN" | "CLOSED" | "SHIPPED"
 export type ShipmentStatus = "OPEN" | "CLOSED" | "SHIPPED"
+
+export interface ProductType {
+  id: string
+  category: ProductCategory
+  display_name: string
+  unspsc_code: string | null
+  inn_name: string | null
+  brand: string | null
+  strength: string | null
+  form: string | null
+  gtin: string | null
+  default_unit: string | null
+  is_controlled: boolean
+  min_shelf_life_days: number | null
+  created_at: string
+}
+
+export interface BoxOut {
+  id: string
+  code: string
+  product_type_id: string
+  quantity: number
+  unit: string
+  batch: string | null
+  expiry_date: string | null
+  weight_kg: string | null
+  status: BoxStatus
+  reject_reason: string | null
+  created_at: string
+}
+
+export interface IntakeOut {
+  id: string
+  center_id: string
+  donante_libre: string | null
+  notes: string | null
+  created_at: string
+  boxes: BoxOut[]
+}
