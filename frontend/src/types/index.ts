@@ -80,3 +80,14 @@ export interface IntakeOut {
   created_at: string
   boxes: BoxOut[]
 }
+
+export interface BoxPublicOut {
+  code: string
+  status: string
+  category: string
+  display_name: string
+  quantity: number
+  unit: string
+  expiry_date: string | null
+  sealed_at: string | null
+}

@@ -5,18 +5,20 @@ Falls back gracefully: if the API is down or the product is not found, returns N
 """
 
 import logging
+
 import httpx
+
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 _BASE = "https://world.openfoodfacts.org/api/v0/product"
-_TIMEOUT = 5.0
 
 
 async def lookup_barcode(gtin: str) -> dict | None:
     """Returns a dict with prefill fields or None if not found / error."""
     try:
-        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+        async with httpx.AsyncClient(timeout=settings.open_food_facts_timeout) as client:
             r = await client.get(f"{_BASE}/{gtin}.json")
         if r.status_code != 200:
             return None
