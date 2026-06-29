@@ -144,3 +144,48 @@ export interface ShipmentOut {
 export interface ShipmentDetailOut extends ShipmentOut {
   pallets: PalletDetailOut[]
 }
+
+// ── Aggregate / Dashboard ──────────────────────────────────────────────────────
+
+export interface CategoryStockOut {
+  category: string
+  total_units: number
+  box_count: number
+}
+
+export interface CenterStockOut {
+  center_id: string
+  center_name: string
+  country_code: string | null
+  state_name: string | null
+  total_units: number
+  box_count: number
+}
+
+export interface InnStockOut {
+  inn_name: string | null
+  strength: string | null
+  form: string | null
+  total_units: number
+  box_count: number
+}
+
+export interface SummaryTotalsOut {
+  total_boxes_sealed: number
+  total_units_sealed: number
+  total_weight_kg: number
+  total_intakes: number
+  total_shipments_sent: number
+  active_centers: number
+}
+
+export interface NationalDashboardOut {
+  totals: SummaryTotalsOut
+  by_category: CategoryStockOut[]
+  by_center: CenterStockOut[]
+  by_inn: InnStockOut[]
+}
+
+export interface PublicNeedsOut {
+  by_category: CategoryStockOut[]
+}

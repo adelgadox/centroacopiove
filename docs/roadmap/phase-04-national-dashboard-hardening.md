@@ -7,8 +7,8 @@
 
 | # | Tarea | Descripción | Complejidad | Estado |
 |---|-------|-------------|-------------|--------|
-| 1 | Consultas agregadas | Stock por categoría/INN/strength, por centro y total | 🟠 | ⬜ Pendiente |
-| 2 | Endpoint público "qué falta / qué sobra" | Solo lectura, cacheable en edge | 🟡 | ⬜ Pendiente |
+| 1 | Consultas agregadas | Stock por categoría/INN/strength, por centro y total | 🟠 | ✅ Done |
+| 2 | Endpoint público "qué falta / qué sobra" | Solo lectura, cacheable en edge | 🟡 | ✅ Done |
 | 3 | PWA + captura offline | Sync diferido tolerante a red intermitente | 🔴 | ⬜ Pendiente |
 | 16 | Escáner QR por cámara (móvil) | Lector de QR nativo desde el navegador móvil; aplica a ficha de caja (`/b/{code}`) y tarima (`/p/{code}`) — biblioteca `html5-qrcode` o `@zxing/browser` | 🟡 | ⬜ Pendiente |
 | 17 | Escáner de código de barras (móvil) | Lectura de GTIN desde cámara en el formulario de intake (reemplaza el campo de texto manual) — misma biblioteca que QR; fallback a input manual | 🟡 | ⬜ Pendiente |
@@ -17,17 +17,22 @@
 
 | # | Tarea | Descripción | Complejidad | Estado |
 |---|-------|-------------|-------------|--------|
-| 4 | Dashboard nacional (admin) | Agregado visual de stock por categoría y centro | 🟠 | ⬜ Pendiente |
-| 5 | Página pública de necesidades | "Qué falta" sin login; cacheable | 🟡 | ⬜ Pendiente |
+| 4 | Dashboard nacional (admin) | Agregado visual de stock por categoría y centro | 🟠 | ✅ Done |
+| 5 | Página pública de necesidades | "Qué falta" sin login; cacheable | 🟡 | ✅ Done |
 
 #### Infra / seguridad
 
 | # | Tarea | Descripción | Complejidad | Estado |
 |---|-------|-------------|-------------|--------|
-| 6 | Cloudflare-only mode activado | `CLOUDFLARE_ONLY=true`; bloqueo directo a Railway URL | 🟡 | ⬜ Pendiente |
-| 7 | WAF + rate limiting afinados | Reglas Cloudflare para rutas críticas | 🟡 | ⬜ Pendiente |
-| 8 | Turnstile en formularios públicos | Anti-bot en intake y otros forms públicos | 🟢 | ⬜ Pendiente |
-| 9 | Spend caps Vercel + alertas | Anti-EDoS presupuestario | 🟢 | ⬜ Pendiente |
+| 6 | Cloudflare-only mode activado | `CLOUDFLARE_ONLY=true`; bloqueo directo a Railway URL — middleware ya en `main.py`, solo falta variable de entorno + DNS apuntando a Cloudflare | 🟡 | ⬜ Pendiente |
+| 7 | WAF + rate limiting afinados | Reglas Cloudflare para rutas críticas (`/v1/auth/*`, `/v1/intakes`, endpoints de PDF); activar Bot Fight Mode | 🟡 | ⬜ Pendiente |
+| 8 | Turnstile en formularios públicos | Token Turnstile en ficha pública QR + validación backend en `POST /v1/intakes`; `TURNSTILE_SECRET_KEY` en env | 🟢 | ⬜ Pendiente |
+| 9 | Spend caps Vercel + alertas | Configurar spend cap en Vercel dashboard; activar alertas de uso de banda | 🟢 | ⬜ Pendiente |
+| 18 | Configurar Sentry en producción | Agregar `SENTRY_DSN` en Railway env vars — SDK ya inicializado en `main.py`; verificar que llegan errores 500 al dashboard de Sentry | 🟢 | ⬜ Pendiente |
+| 19 | Configurar Resend en producción | Agregar `RESEND_API_KEY` + dominio verificado en Resend; SDK ya instalado; configurar `FROM_EMAIL` en env Railway y Vercel | 🟢 | ⬜ Pendiente |
+| 20 | PgBouncer tuning (Railway) | Railway Postgres incluye PgBouncer en modo transaction; ajustar `pool_size=5`, `max_overflow=10`, `pool_pre_ping=True` en `database.py`; deshabilitar `AUTOCOMMIT` — previene agotamiento de conexiones bajo carga | 🟡 | ✅ Done |
+| 21 | Alertas de ataques (Cloudflare + Sentry) | Activar notificaciones de Cloudflare por spikes de tráfico; configurar alerta Sentry para errores 429 (rate limit hit) y 403 (Cloudflare block) en producción | 🟡 | ⬜ Pendiente |
+| 22 | Deploy inicial: dominio + DNS + Railway + Vercel | Apuntar dominio a Cloudflare; configurar Railway service + Postgres + Redis; configurar Vercel project + env vars; smoke test end-to-end | 🟠 | ⬜ Pendiente |
 
 #### OTP / Autenticación en dos pasos (2FA)
 
