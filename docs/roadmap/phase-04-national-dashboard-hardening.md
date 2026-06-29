@@ -10,6 +10,8 @@
 | 1 | Consultas agregadas | Stock por categoría/INN/strength, por centro y total | 🟠 | ⬜ Pendiente |
 | 2 | Endpoint público "qué falta / qué sobra" | Solo lectura, cacheable en edge | 🟡 | ⬜ Pendiente |
 | 3 | PWA + captura offline | Sync diferido tolerante a red intermitente | 🔴 | ⬜ Pendiente |
+| 16 | Escáner QR por cámara (móvil) | Lector de QR nativo desde el navegador móvil; aplica a ficha de caja (`/b/{code}`) y tarima (`/p/{code}`) — biblioteca `html5-qrcode` o `@zxing/browser` | 🟡 | ⬜ Pendiente |
+| 17 | Escáner de código de barras (móvil) | Lectura de GTIN desde cámara en el formulario de intake (reemplaza el campo de texto manual) — misma biblioteca que QR; fallback a input manual | 🟡 | ⬜ Pendiente |
 
 #### Frontend
 

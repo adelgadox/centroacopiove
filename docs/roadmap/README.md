@@ -3,9 +3,9 @@
 ## Progreso general
 
 ```mermaid
-pie title Tareas completadas (52 tareas)
+pie title Tareas completadas (88 tareas)
     "Listas" : 39
-    "Pendientes" : 17
+    "Pendientes" : 49
 ```
 
 | Fase | Nombre | Listas | Pendientes | Progreso |
@@ -14,8 +14,9 @@ pie title Tareas completadas (52 tareas)
 | 1 | [Catálogo e intake con validaciones](phase-01-catalog-intake.md) | 8 | 0 | ✅ 100% |
 | 2 | [Caja homogénea, QR y etiqueta](phase-02-box-qr-label.md) | 6 | 0 | ✅ 100% |
 | 3 | [Tarima, envío y manifiesto](phase-03-pallet-shipment-manifest.md) | 9 | 0 | ✅ 100% |
-| 4 | [Panel agregado nacional + endurecimiento + OTP](phase-04-national-dashboard-hardening.md) | 0 | 15 | ⬜ 0% |
-| **Total** | | **39** | **17** | **🟡 70%** |
+| 4 | [Panel agregado nacional + endurecimiento + OTP + scanning móvil](phase-04-national-dashboard-hardening.md) | 0 | 17 | ⬜ 0% |
+| 5 | [Studio — panel de administración nacional](phase-05-studio.md) | 0 | 16 | ⬜ 0% |
+| **Total** | | **39** | **49** | **🟡 44%** |
 
 > Las tareas 1 y 2 de Fase 0 (Envs + aplicar migración) requieren acción manual con DB activa.
 
@@ -26,9 +27,12 @@ pie title Tareas completadas (52 tareas)
 ```
 Fase 0 ─► Fase 1 ─► Fase 2 ─► Fase 3 ─► Fase 4
                 └──────────────► (panel agregado usa datos de 1–3)
+                                              │
+                                              └──► Fase 5 (Studio)
 ```
 
-Fase 4 (offline/PWA y endurecimiento) puede solaparse con 2–3 según prioridad mediática.
+- Fase 4 (endurecimiento + scanning móvil) puede solaparse con 2–3 según prioridad mediática.
+- Fase 5 (Studio) depende de Fase 0 (usuarios/roles) pero es independiente de 1–4; puede arrancarse en paralelo.
 
 ---
 
