@@ -4,18 +4,18 @@
 
 ```mermaid
 pie title Tareas completadas (52 tareas)
-    "Listas" : 38
-    "Pendientes" : 18
+    "Listas" : 39
+    "Pendientes" : 17
 ```
 
 | Fase | Nombre | Listas | Pendientes | Progreso |
 |------|--------|-------:|-----------:|----------|
-| 0 | [Scaffolding + multi-tenant + roles](phase-00-scaffolding.md) | 15 | 3 | 🟡 83% |
+| 0 | [Scaffolding + multi-tenant + roles](phase-00-scaffolding.md) | 16 | 2 | 🟡 89% |
 | 1 | [Catálogo e intake con validaciones](phase-01-catalog-intake.md) | 8 | 0 | ✅ 100% |
 | 2 | [Caja homogénea, QR y etiqueta](phase-02-box-qr-label.md) | 6 | 0 | ✅ 100% |
 | 3 | [Tarima, envío y manifiesto](phase-03-pallet-shipment-manifest.md) | 9 | 0 | ✅ 100% |
 | 4 | [Panel agregado nacional + endurecimiento + OTP](phase-04-national-dashboard-hardening.md) | 0 | 15 | ⬜ 0% |
-| **Total** | | **38** | **18** | **🟡 68%** |
+| **Total** | | **39** | **17** | **🟡 70%** |
 
 > Las tareas 1 y 2 de Fase 0 (Envs + aplicar migración) requieren acción manual con DB activa.
 

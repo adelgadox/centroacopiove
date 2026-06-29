@@ -90,6 +90,7 @@ export interface BoxDraft {
 }
 
 export interface CreateIntakePayload {
+  campaign_id?: string
   donante_libre?: string
   notes?: string
   boxes: BoxDraft[]

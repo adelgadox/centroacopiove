@@ -46,6 +46,6 @@
 | 15 | Modelo + migración `004_campaigns` | Entidad `Campaign` global (sin `center_id`); FK nullable en `intakes` y `shipments` | 🟡 | ✅ Done |
 | 16 | CRUD de campañas | Endpoints: `national_admin` crea/edita; coordinadores/voluntarios leen para seleccionar en intake/envío | 🟡 | ✅ Done |
 | 17 | UI de gestión de campañas | Página `/dashboard/campaigns`; crear campaña con nombre, país destino, fechas; toggle activo/inactivo | 🟡 | ✅ Done |
-| 18 | Selector de campaña en intake y envío | Dropdown de campaña activa al registrar donaciones y al crear envíos | 🟠 | ⬜ Pendiente |
+| 18 | Selector de campaña en intake y envío | Dropdown de campaña activa al registrar donaciones y al crear envíos | 🟠 | ✅ Done |
 
 > **Decisión de diseño:** Las campañas son **globales** (creadas por `national_admin`, sin `center_id`). Múltiples centros contribuyen a la misma campaña. `campaign_id` es FK nullable en `Intake` y `Shipment` para retrocompatibilidad.
