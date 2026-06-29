@@ -7,6 +7,12 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 # ---- final: clean slim image, no build artifacts ----
 FROM python:3.12-slim
 WORKDIR /app
+
+# System deps required by WeasyPrint (manifest PDF generation)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpango-1.0-0 libpangocairo-1.0-0 libcairo2 libgif-dev fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /install /usr/local
 COPY . .
 
