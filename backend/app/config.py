@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "My App API"
+    app_name: str = "Acopio API"
     debug: bool = False
 
     # ── Database ──────────────────────────────────────────────────────────────
@@ -53,6 +53,10 @@ class Settings(BaseSettings):
     # Google Safe Browsing API key — enables URL reputation checks in
     # app.utils.url_security.check_safe_browsing (optional; fails open when empty)
     google_safe_browsing_api_key: str = ""
+
+    # ── Open Food Facts ───────────────────────────────────────────────────────
+    # Public API — no key required. Timeout in seconds (default 5).
+    open_food_facts_timeout: float = 5.0
 
     # ── Redis (background jobs + cache) ─────────────────────────────────────────
     # Powers app.utils.cache and the ARQ durable task queue. Everything degrades

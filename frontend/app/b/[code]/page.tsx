@@ -3,6 +3,11 @@ import type { BoxPublicOut } from "@/types"
 
 export const revalidate = 3600
 
+// Server-side: uses internal Railway URL (bypasses Cloudflare, avoids Bot Fight Mode)
+const API_URL = process.env.API_URL ?? "http://localhost:8000"
+// Public URL embedded in HTML — must be accessible from the browser (Cloudflare-proxied)
+const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+
 const CATEGORY_LABELS: Record<string, string> = {
   MEDICINE: "Medicamento",
   MEDICAL_SUPPLY: "Insumo médico",
@@ -34,7 +39,6 @@ interface Props {
 
 export default async function BoxPublicFichaPage({ params }: Props) {
   const { code } = await params
-  const API_URL = process.env.API_URL ?? "http://localhost:8000"
 
   const res = await fetch(`${API_URL}/b/${code}`, {
     next: { revalidate: 3600 },
@@ -51,7 +55,7 @@ export default async function BoxPublicFichaPage({ params }: Props) {
         {/* QR */}
         <div className="flex justify-center bg-zinc-50 pt-6 pb-4 border-b border-zinc-100">
           <img
-            src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/b/${code}/qr.png`}
+            src={`${PUBLIC_API_URL}/b/${code}/qr.png`}
             alt={`QR código ${code}`}
             width={140}
             height={140}
