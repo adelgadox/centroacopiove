@@ -51,7 +51,7 @@ reportlab==4.4.1
 
 # Manifest PDF (HTML → PDF via WeasyPrint + Jinja2 is already above)
 # Dockerfile system deps required: apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libcairo2 libgif-dev fonts-liberation
-weasyprint==62.3
+weasyprint==68.0
 
 # GeoIP — MaxMind GeoLite2 country/city lookup
 # geoip2==4.8.0
