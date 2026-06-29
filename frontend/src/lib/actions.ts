@@ -77,3 +77,37 @@ export async function logoutAction() {
 export async function revalidateDashboardAction(): Promise<void> {
   revalidatePath("/dashboard", "layout")
 }
+
+// ── Intake ────────────────────────────────────────────────────────────────────
+
+export interface BoxDraft {
+  product_type_id: string
+  quantity: number
+  unit: string
+  batch?: string
+  expiry_date?: string
+  weight_kg?: number
+}
+
+export interface CreateIntakePayload {
+  donante_libre?: string
+  notes?: string
+  boxes: BoxDraft[]
+}
+
+export async function createIntakeAction(payload: CreateIntakePayload) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const data = await apiFetch("/v1/intakes", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      token: session.accessToken,
+    })
+    revalidatePath("/dashboard/intake")
+    return { data }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al registrar intake" }
+  }
+}
