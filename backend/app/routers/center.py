@@ -1,0 +1,58 @@
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.dependencies import require_national_admin
+from app.models.user import User
+from app.schemas.center import CenterCreate, CenterOut, CenterUpdate
+from app.services.center_service import CenterService
+from app.utils.rate_limit import limiter
+
+router = APIRouter(prefix="/centers", tags=["centers"])
+
+
+@router.get("", response_model=list[CenterOut])
+@limiter.limit("60/minute")
+def list_centers(
+    request: Request,
+    active_only: bool = False,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_national_admin),
+):
+    return CenterService(db).list_centers(active_only=active_only)
+
+
+@router.get("/{center_id}", response_model=CenterOut)
+@limiter.limit("60/minute")
+def get_center(
+    request: Request,
+    center_id: UUID,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_national_admin),
+):
+    return CenterService(db).get_center(center_id)
+
+
+@router.post("", response_model=CenterOut, status_code=201)
+@limiter.limit("20/hour")
+def create_center(
+    request: Request,
+    data: CenterCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_national_admin),
+):
+    return CenterService(db).create_center(data)
+
+
+@router.patch("/{center_id}", response_model=CenterOut)
+@limiter.limit("30/minute")
+def update_center(
+    request: Request,
+    center_id: UUID,
+    data: CenterUpdate,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_national_admin),
+):
+    return CenterService(db).update_center(center_id, data)

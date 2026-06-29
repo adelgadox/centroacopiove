@@ -11,6 +11,8 @@ class UserCreate(StrictModel):
 class Token(StrictModel):
     access_token: str
     token_type: str = "bearer"
+    center_role: str | None = None
+    center_id: str | None = None
 
 
 class ResendRequest(StrictModel):

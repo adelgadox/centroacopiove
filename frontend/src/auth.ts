@@ -1,6 +1,5 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import Google from "next-auth/providers/google"
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000"
 
@@ -29,26 +28,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const data = await res.json()
-        return { accessToken: data.access_token }
+        return {
+          accessToken: data.access_token,
+          centerRole: data.center_role ?? null,
+          centerId: data.center_id ?? null,
+          userId: _extractSub(data.access_token),
+        }
       },
     }),
-    // Uncomment to enable Google OAuth:
-    // Google({
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // @ts-expect-error — custom field
         token.accessToken = user.accessToken
+        token.centerRole = user.centerRole
+        token.centerId = user.centerId
+        token.userId = user.userId
       }
       return token
     },
     async session({ session, token }) {
-      // @ts-expect-error — custom field
       session.accessToken = token.accessToken
+      session.centerRole = token.centerRole
+      session.centerId = token.centerId
+      session.userId = token.userId
       return session
     },
   },
@@ -56,3 +59,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
 })
+
+function _extractSub(jwt: string): string {
+  try {
+    const [, b64] = jwt.split(".")
+    const payload = JSON.parse(Buffer.from(b64.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString())
+    return payload.sub ?? ""
+  } catch {
+    return ""
+  }
+}

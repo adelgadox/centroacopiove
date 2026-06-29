@@ -3,7 +3,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
+from app.models.user import User
 from app.schemas.auth import ForgotPasswordRequest, OAuthLogin, ResendRequest, ResetPasswordRequest, Token, UserCreate
+from app.schemas.user_domain import UserOut
 from app.services.auth_service import AuthService
 from app.utils.rate_limit import limiter
 
@@ -78,6 +81,11 @@ async def forgot_password(
     db: Session = Depends(get_db),
 ):
     return AuthService(db).forgot_password(data.email, background_tasks)
+
+
+@router.get("/me", response_model=UserOut)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
 
 
 @router.post("/reset-password")

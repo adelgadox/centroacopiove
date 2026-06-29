@@ -8,9 +8,15 @@ from app.config import settings
 from app.database import Base
 
 # Import all models so their tables are registered in Base.metadata
-# Add new models here as you create them
-import app.models.user          # noqa: F401
+import app.models.user            # noqa: F401
 import app.models.token_denylist  # noqa: F401
+import app.models.center          # noqa: F401
+import app.models.product_type    # noqa: F401
+import app.models.shipment        # noqa: F401
+import app.models.pallet          # noqa: F401
+import app.models.intake          # noqa: F401
+import app.models.box             # noqa: F401
+import app.models.events          # noqa: F401
 
 config = context.config
 # Use the direct (non-PgBouncer) URL for migrations when available — PgBouncer
