@@ -91,3 +91,43 @@ export interface BoxPublicOut {
   expiry_date: string | null
   sealed_at: string | null
 }
+
+export interface PalletOut {
+  id: string
+  code: string
+  center_id: string
+  shipment_id: string | null
+  status: PalletStatus
+  notes: string | null
+  closed_at: string | null
+  created_at: string
+}
+
+export interface PalletDetailOut extends PalletOut {
+  boxes: BoxOut[]
+}
+
+export interface PalletPublicOut {
+  code: string
+  status: PalletStatus
+  center_name: string
+  box_count: number
+  closed_at: string | null
+}
+
+export interface ShipmentOut {
+  id: string
+  center_id: string | null
+  destination: string
+  carrier: string | null
+  reference: string | null
+  status: ShipmentStatus
+  notes: string | null
+  closed_at: string | null
+  shipped_at: string | null
+  created_at: string
+}
+
+export interface ShipmentDetailOut extends ShipmentOut {
+  pallets: PalletDetailOut[]
+}

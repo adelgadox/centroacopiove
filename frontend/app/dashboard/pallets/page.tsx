@@ -1,0 +1,234 @@
+"use client"
+
+import { useState, useEffect, useTransition } from "react"
+import type { PalletOut, PalletDetailOut, PalletStatus } from "@/types"
+import {
+  createPalletAction,
+  addBoxToPalletAction,
+  closePalletAction,
+  downloadPalletLabelAction,
+} from "@/lib/pallet-actions"
+
+const STATUS_LABELS: Record<PalletStatus, string> = {
+  OPEN: "Abierta",
+  CLOSED: "Cerrada",
+  SHIPPED: "Enviada",
+}
+
+const STATUS_COLORS: Record<PalletStatus, string> = {
+  OPEN: "bg-yellow-100 text-yellow-800",
+  CLOSED: "bg-green-100 text-green-800",
+  SHIPPED: "bg-blue-100 text-blue-800",
+}
+
+export default function PalletsPage() {
+  const [pallets, setPallets] = useState<PalletOut[]>([])
+  const [filter, setFilter] = useState<PalletStatus | "">("")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [activePallet, setActivePallet] = useState<PalletDetailOut | null>(null)
+  const [boxCodeInput, setBoxCodeInput] = useState("")
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  const fetchPallets = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const params = filter ? `?status=${filter}` : ""
+      const res = await fetch(`/api/pallets${params}`)
+      if (!res.ok) throw new Error("Error al cargar tarimas")
+      setPallets(await res.json())
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Error desconocido")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchPalletDetail = async (id: string) => {
+    const res = await fetch(`/api/pallets/${id}`)
+    if (res.ok) setActivePallet(await res.json())
+  }
+
+  useEffect(() => { fetchPallets() }, [filter])
+
+  const handleCreate = async () => {
+    setActionLoading("create")
+    const result = await createPalletAction()
+    setActionLoading(null)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      await fetchPallets()
+    }
+  }
+
+  const handleAddBox = async () => {
+    if (!activePallet || !boxCodeInput.trim()) return
+    setActionLoading("add-box")
+    const result = await addBoxToPalletAction(activePallet.id, boxCodeInput.trim().toUpperCase())
+    setActionLoading(null)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setBoxCodeInput("")
+      setActivePallet(result.data as PalletDetailOut)
+      await fetchPallets()
+    }
+  }
+
+  const handleClose = async (palletId: string) => {
+    setActionLoading(palletId)
+    const result = await closePalletAction(palletId)
+    setActionLoading(null)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setPallets((prev) => prev.map((p) => p.id === palletId ? { ...p, status: "CLOSED" as PalletStatus } : p))
+      if (activePallet?.id === palletId) setActivePallet({ ...activePallet, status: "CLOSED" })
+    }
+  }
+
+  const handleDownloadLabel = (palletId: string) => {
+    startTransition(async () => {
+      const result = await downloadPalletLabelAction(palletId)
+      if (result.error) {
+        setError(result.error)
+      } else if (result.pdf) {
+        const bytes = Uint8Array.from(atob(result.pdf), (c) => c.charCodeAt(0))
+        const blob = new Blob([bytes], { type: "application/pdf" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = result.filename ?? "tarima.pdf"
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+    })
+  }
+
+  return (
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-zinc-900">Tarimas</h1>
+        <button
+          onClick={handleCreate}
+          disabled={actionLoading === "create"}
+          className="px-4 py-2 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-50"
+        >
+          {actionLoading === "create" ? "Creando..." : "+ Nueva tarima"}
+        </button>
+      </div>
+
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+          {error}
+          <button className="ml-2 underline" onClick={() => setError(null)}>Cerrar</button>
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        {(["", "OPEN", "CLOSED", "SHIPPED"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilter(s)}
+            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${filter === s ? "bg-zinc-900 text-white border-zinc-900" : "bg-white text-zinc-600 border-zinc-300 hover:border-zinc-500"}`}
+          >
+            {s === "" ? "Todas" : STATUS_LABELS[s as PalletStatus]}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Pallet list */}
+        <div className="space-y-2">
+          {loading ? (
+            <p className="text-sm text-zinc-400">Cargando...</p>
+          ) : pallets.length === 0 ? (
+            <p className="text-sm text-zinc-400">No hay tarimas.</p>
+          ) : pallets.map((pallet) => (
+            <div
+              key={pallet.id}
+              onClick={() => fetchPalletDetail(pallet.id)}
+              className={`rounded-xl border p-4 cursor-pointer transition-colors ${activePallet?.id === pallet.id ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white hover:border-zinc-400"}`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-sm text-zinc-900">{pallet.code}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[pallet.status]}`}>
+                  {STATUS_LABELS[pallet.status]}
+                </span>
+              </div>
+              <div className="mt-2 flex gap-2">
+                {pallet.status === "OPEN" && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleClose(pallet.id) }}
+                    disabled={actionLoading === pallet.id}
+                    className="text-xs px-2 py-1 rounded border border-green-300 text-green-700 hover:bg-green-50 disabled:opacity-50"
+                  >
+                    {actionLoading === pallet.id ? "Cerrando..." : "Cerrar tarima"}
+                  </button>
+                )}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDownloadLabel(pallet.id) }}
+                  disabled={isPending}
+                  className="text-xs px-2 py-1 rounded border border-zinc-300 text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  Etiqueta PDF
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Active pallet detail */}
+        {activePallet && (
+          <div className="rounded-xl border border-zinc-200 bg-white p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-mono font-bold text-lg">{activePallet.code}</h2>
+              <button onClick={() => setActivePallet(null)} className="text-zinc-400 hover:text-zinc-700 text-sm">✕</button>
+            </div>
+
+            {activePallet.status === "OPEN" && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Código de caja (BX-...)"
+                  value={boxCodeInput}
+                  onChange={(e) => setBoxCodeInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddBox()}
+                  className="flex-1 text-sm border border-zinc-300 rounded-lg px-3 py-2 font-mono uppercase placeholder:normal-case placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-zinc-400"
+                />
+                <button
+                  onClick={handleAddBox}
+                  disabled={!boxCodeInput.trim() || actionLoading === "add-box"}
+                  className="px-3 py-2 bg-zinc-900 text-white rounded-lg text-sm hover:bg-zinc-700 disabled:opacity-50"
+                >
+                  {actionLoading === "add-box" ? "..." : "Agregar"}
+                </button>
+              </div>
+            )}
+
+            <div>
+              <p className="text-xs font-semibold text-zinc-500 mb-2">
+                {activePallet.boxes.length} caja{activePallet.boxes.length !== 1 ? "s" : ""}
+              </p>
+              {activePallet.boxes.length === 0 ? (
+                <p className="text-sm text-zinc-400">Sin cajas. Escanea o ingresa el código.</p>
+              ) : (
+                <ul className="space-y-1">
+                  {activePallet.boxes.map((box) => (
+                    <li key={box.id} className="flex items-center justify-between text-sm border-b border-zinc-100 pb-1">
+                      <span className="font-mono text-xs text-zinc-700">{box.code}</span>
+                      <span className="text-xs text-zinc-500">{box.quantity} {box.unit}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,103 @@
+"use server"
+
+import { auth } from "@/auth"
+import { apiFetch } from "@/lib/api"
+import { revalidatePath } from "next/cache"
+
+export async function createShipmentAction(data: {
+  destination?: string
+  carrier?: string
+  reference?: string
+  notes?: string
+}) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const result = await apiFetch("/v1/shipments", {
+      method: "POST",
+      token: session.accessToken,
+      body: {
+        destination: data.destination ?? "Venezuela",
+        carrier: data.carrier ?? null,
+        reference: data.reference ?? null,
+        notes: data.notes ?? null,
+      },
+    })
+    revalidatePath("/dashboard/shipments")
+    return { data: result }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al crear envío" }
+  }
+}
+
+export async function addPalletToShipmentAction(shipmentId: string, palletId: string) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const data = await apiFetch(`/v1/shipments/${shipmentId}/add-pallet`, {
+      method: "POST",
+      token: session.accessToken,
+      body: { pallet_id: palletId },
+    })
+    revalidatePath("/dashboard/shipments")
+    return { data }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al agregar tarima" }
+  }
+}
+
+export async function closeShipmentAction(shipmentId: string) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const data = await apiFetch(`/v1/shipments/${shipmentId}/close`, {
+      method: "POST",
+      token: session.accessToken,
+    })
+    revalidatePath("/dashboard/shipments")
+    return { data }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al cerrar envío" }
+  }
+}
+
+export async function shipShipmentAction(shipmentId: string) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const data = await apiFetch(`/v1/shipments/${shipmentId}/ship`, {
+      method: "POST",
+      token: session.accessToken,
+    })
+    revalidatePath("/dashboard/shipments")
+    return { data }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al despachar envío" }
+  }
+}
+
+export async function downloadManifestAction(shipmentId: string, reference?: string) {
+  const session = await auth()
+  if (!session?.accessToken) return { error: "No autenticado" }
+
+  try {
+    const API_URL = process.env.API_URL ?? "http://localhost:8000"
+    const res = await fetch(`${API_URL}/v1/shipments/${shipmentId}/manifest.pdf`, {
+      headers: { Authorization: `Bearer ${session.accessToken}` },
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      return { error: body.error?.message ?? "Error al generar manifiesto" }
+    }
+    const buffer = await res.arrayBuffer()
+    const base64 = Buffer.from(buffer).toString("base64")
+    const ref = reference ?? shipmentId.slice(0, 8)
+    return { pdf: base64, filename: `manifiesto-${ref}.pdf` }
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Error al descargar manifiesto" }
+  }
+}
