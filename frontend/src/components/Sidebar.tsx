@@ -13,10 +13,12 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Inicio", roles: ["national_admin", "coordinator", "volunteer"] },
+  { href: "/dashboard/national", label: "Panel nacional", roles: ["national_admin"] },
   { href: "/dashboard/intake", label: "Recepción (Intake)", roles: ["coordinator", "volunteer"] },
   { href: "/dashboard/boxes", label: "Cajas", roles: ["coordinator", "volunteer"] },
   { href: "/dashboard/pallets", label: "Tarimas", roles: ["coordinator"] },
   { href: "/dashboard/shipments", label: "Envíos", roles: ["coordinator"] },
+  { href: "/dashboard/campaigns", label: "Campañas", roles: ["national_admin", "coordinator", "volunteer"] },
   { href: "/dashboard/centers", label: "Centros", roles: ["national_admin"] },
 ]
 
